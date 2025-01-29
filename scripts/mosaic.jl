@@ -1,6 +1,3 @@
-using Pkg
-Pkg.instantiate()
-
 import ConScapeJobs
 using Rasters
 

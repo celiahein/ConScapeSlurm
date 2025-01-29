@@ -10,7 +10,7 @@
                                   # example, as the $SLURM_ARRAY_TASK_ID
                                   # variable starts at 0
 
-module --quiet purge   # clear any inherited modulesk
-module load Julia/1.10.5-linux-x86_64
+# module --quiet purge   # clear any inherited modulesk
+# module load Julia/1.10.5-linux-x86_64
 
-julia --nthreads=8 --project=. run_job.jl
+julia --threads=8 --project=.. run_job.jl

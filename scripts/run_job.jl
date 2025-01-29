@@ -1,8 +1,6 @@
-using Pkg
-Pkg.instantiate()
-
-using ConScapeJobs
+nothing
 using ConScape
+using ConScapeJobs
 
-i = ENV["job_index"]
+i = ENV["SLURM_ARRAY_TASK_ID"]
 ConScape.solve(ConScapeJobs.batch_problem(), ConScapeJobs.load_raster(), i)

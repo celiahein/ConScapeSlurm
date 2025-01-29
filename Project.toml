@@ -1,7 +1,17 @@
 name = "ConScapeJobs"
-uuid = "a3a2b9e3-a471-40c9-b274-f788e487c689"
+uuid = "15908a7f-091c-4b54-ac2d-225179da51e4"
 authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
 
 [deps]
+ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 ConScape = "2ba2d6f2-f651-5162-bda8-601e45ce5244"
+DiskArrays = "3c3547ce-8d99-4f5e-a174-61eb10b00ae3"
+PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 Rasters = "a3a2b9e3-a471-40c9-b274-f788e487c689"
+
+[compat]
+ArchGDAL = "0.10.8"
+ConScape = "0.3.0"
+DiskArrays = "0.4.8"
+PrecompileTools = "1.2.1"
+Rasters = "0.14.2"
