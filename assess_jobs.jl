@@ -3,4 +3,4 @@ Pkg.instantiate()
 
 include("problem.jl")
 
-allocations(batch_problem, rast)
+assess(batch_problem, rast)
