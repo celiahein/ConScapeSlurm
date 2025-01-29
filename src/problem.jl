@@ -67,8 +67,8 @@ end
         centersize=5, 
     ) 
     # Just precompile the inner problem
-    problem = batch.problem.problem
-    workspace = ConScape.init(problem, rast)
-    ConScape.solve!(workspace, problem)
+    # problem = batch.problem.problem
+    # workspace = ConScape.init(problem, rast)
+    # ConScape.solve!(workspace, problem)
     # ConScape.assess(problem, rast)
 end
