@@ -115,7 +115,7 @@ end
 
 sort!(collect(filter(x -> x[2] > 0, pairs(compute_times))); by=last)
 
-sum(filter(x -> first(x) > 0, compute_times)) # 2.7187976296927966e7 for 21, 4.206030073641315e7 for 10, 2.9489153255297504e7 for 16
+sum(filter(x -> first(x) > 0, compute_times)) # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 
 
 heatmap(rotl90(reshape(compute_times, bs.shape)))

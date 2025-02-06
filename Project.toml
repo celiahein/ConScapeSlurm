@@ -4,6 +4,7 @@ authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
 
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 ConScape = "2ba2d6f2-f651-5162-bda8-601e45ce5244"
 DiskArrays = "3c3547ce-8d99-4f5e-a174-61eb10b00ae3"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
