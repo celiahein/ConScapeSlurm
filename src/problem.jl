@@ -22,7 +22,7 @@ end
 
 # Problem
 function batch_problem(;
-    nwindows=50,
+    nwindows=15,
     buffer=200,
     centersize=16, 
 )
@@ -46,7 +46,7 @@ function batch_problem(;
     
     # Specify the windowing pattern
     windowed_problem = ConScape.WindowedProblem(problem; 
-        buffer, centersize, threaded=true
+        buffer, centersize, threaded=false
     )
 
     # Specify the batch job windowing
