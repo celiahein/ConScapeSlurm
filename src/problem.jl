@@ -41,7 +41,7 @@ function batch_problem(;
     )
 
     ## Specify the problem
-    solver = ConScape.MatrixSolver()
+    solver = ConScape.VectorSolver()
     problem = ConScape.Problem(; graph_measures, connectivity_measure, solver)
     
     # Specify the windowing pattern
