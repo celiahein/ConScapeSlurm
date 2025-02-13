@@ -110,9 +110,8 @@ h = histogram(estimates.compute_estimates[assessment.mask] / 60;
 savefig(h, "compute_hist.png")
 inds = assessment.indices
 compute_sorted_indices = last.(sort(estimates.compute_estimates[inds] .=> inds; rev=true))
-estimates.batch_estimates
-assessment.assessments[assessment.indices[1]]
-@time ConScape.solve(batch_problem, rast, assessment.indices[1],
-    window_indices=assessment.indices, 
-    verbose=true,
-)
+# assessment.assessments[assessment.indices[1]]
+# @time ConScape.solve(batch_problem, rast, assessment.indices[1],
+    # window_indices=assessment.indices, 
+    # verbose=true,
+# )
