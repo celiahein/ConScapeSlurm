@@ -1,7 +1,7 @@
 println("Loading packages...")
-# using Pkg
- # Pkg.instantiate() 
+using Pkg
 # Pkg.activate("ConScapeJobs/")
+Pkg.instantiate() 
 using ConScape
 using ConScapeJobs
 using ConScape.Plots
