@@ -1,6 +1,7 @@
-using Pkg
+println("Loading packages...")
+# using Pkg
  # Pkg.instantiate() 
-Pkg.activate("ConScapeJobs/")
+# Pkg.activate("ConScapeJobs/")
 using ConScape
 using ConScapeJobs
 using ConScape.Plots
@@ -10,13 +11,19 @@ using Statistics
 using StatsBase
 using SparseArrays
 
+println("Loading problem...")
 batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.load_raster()
 
-# @time assessment = ConScape.assess(batch_problem, rast; verbose=false)
-# JSON3.write("assessment.json", assessment)
+assessment_json = "assessment.json"
+if isfile(assessment_json)
+    assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
+else
+    println("Running assess...")
+    @time assessment = ConScape.assess(batch_problem, rast; verbose=false)
+    JSON3.write(assessment_json, assessment)
+end
 
-assessment = JSON3.read("assessment.json", ConScape.NestedAssessment)
 
 ###
 # Find a job with a wide range of window sizes
@@ -91,10 +98,16 @@ function sample_performance(a::ConScape.NestedAssessment;
     )
 end
 
-# estimates = sample_performance(assessment)
-# JSON3.write("estimates.json", estimates)
-estimates = JSON3.read("estimates.json", NamedTuple)
+estimates_json = "estimates.json"
+if isfile(estimates_json)
+    estimates = JSON3.read("estimates.json", NamedTuple)
+else
+    println("Estimates run-time and memory use...")
+    estimates = sample_performance(assessment)
+    JSON3.write(estimates_json, estimates)
+end
 
+println("Generating plots")
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 
 compute_map = heatmap(rotl90(reshape(estimates.compute_estimates, assessment.shape)))
@@ -102,14 +115,14 @@ savefig(compute_map, "compute_map.png")
 
 # sorted_indices = last.(sort(max_sizes[inds] .=> inds; rev=true))
 h = histogram(estimates.compute_estimates[assessment.mask] / 60; 
-    bins=estimates.nbatches,
+    bins=20,
     xlabel="minutes",
     ylabel="jobs",
     title="Window computations"
 )
 savefig(h, "compute_hist.png")
-inds = assessment.indices
-compute_sorted_indices = last.(sort(estimates.compute_estimates[inds] .=> inds; rev=true))
+# inds = assessment.indices
+# compute_sorted_indices = last.(sort(estimates.compute_estimates[inds] .=> inds; rev=true))
 # assessment.assessments[assessment.indices[1]]
 # @time ConScape.solve(batch_problem, rast, assessment.indices[1],
     # window_indices=assessment.indices, 
