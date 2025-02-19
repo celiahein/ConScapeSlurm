@@ -16,25 +16,26 @@ using UnicodePlots
 datadir = ConScapeJobs.datadir
 
 println("Loading problem...")
-batch_problem = ConScapeJobs.batch_problem(; threaded=false)
+batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.load_raster()
 println("RasterStack of size $(size(rast)) loaded lazily")
 
 assessment_json = joinpath(datadir, "assessment.json")
-# if isfile(assessment_json)
+if isfile(assessment_json)
     assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
-# else
+else
     println("Running assess...")
     @time assessment = ConScape.assess(batch_problem, rast; verbose=true)
-    JSON3.write(assessment_json, assessment)
-# end
+    open(assessment_json; write=true) do io
+        JSON3.write(io, assessment)
+    end
+end
 
 
 ###
 # Find a job with a wide range of window sizes
 
-
-function sample_performance(a::ConScape.NestedAssessment;
+function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
     nwindows=16, nbatches=10,
 ) 
     jobs = map(wa -> wa.njobs, a.assessments[a.mask])
@@ -42,6 +43,7 @@ function sample_performance(a::ConScape.NestedAssessment;
     allocations = @allocated ConScape.init(batch_problem, rast, i; 
         verbose=true, window_indices=a.indices
     )
+    @show allocations
     # How many windows to run for timing analysis
     # Find the most variable batch with nwindows or more
     inner_window_sizes = map(ai -> ai.sizes, a.assessments)
@@ -84,48 +86,46 @@ function sample_performance(a::ConScape.NestedAssessment;
     batchsize = ceil(Int, length(inds) / nbatches)
     compute_sorted_indices = last.(sort(compute_estimates[inds] .=> inds; rev=true))
     batch_estimates = map(1:nbatches) do n
-        
         largest = (n - 1) * batchsize + 1
         compute_estimates[compute_sorted_indices][largest]
     end
     
     return (; 
-        allocations,
         sizes,
         lengths,
         times,
         compute_estimates,
-        total_estimate,
         nbatches,
         batchsize,
         batch_estimates,
+        total_estimate,
+        allocations,
     )
 end
 
 estimates_json = joinpath(datadir, "estimates.json")
-# if isfile(estimates_json)
+if isfile(estimates_json)
     estimates = JSON3.read(estimates_json, NamedTuple)
-# else
+else
     println("Estimates run-time and memory use...")
     estimates = sample_performance(assessment)
     JSON3.write(estimates_json, estimates)
-# end
+end
 
 # println("Generating plots")
-# estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
+estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
+estimates.allocations / 1e9
 
 c = heatmap(rotl90(reshape(estimates.compute_estimates, assessment.shape)))
-display(c)
 # savefig(compute_map, joinpath(datadir, "compute_map.png"))
 
-# sorted_indices = last.(sort(max_sizes[inds] .=> inds; rev=true))
-h = histogram(estimates.compute_estimates[assessment.mask] / 60; 
+nthreads = 4
+h = histogram(estimates.compute_estimates[assessment.mask] / 60 / nthreads; 
     nbins=20,
     xlabel="jobs",
     ylabel="minutes",
     title="Windows grouped by computation time"
 )
-display(h)
 # savefig(h, joinpath(datadir, "compute_hist.png"))
 # inds = assessment.indices
 # compute_sorted_indices = last.(sort(estimates.compute_estimates[inds] .=> inds; rev=true))

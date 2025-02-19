@@ -1,8 +1,9 @@
 #!/bin/bash
 #SBATCH --account=nn11055k
 #SBATCH --job-name='ConScape_Job'
-#SBATCH --time=5:0:0
+#SBATCH --time=3:0:0
 #SBATCH --mem-per-cpu=3G 
+#SBATCH --cpus-per-task=4
 #SBATCH --ntasks=1
 #SBATCH --array=0-199
        # we start at 0 instead of 1 for this

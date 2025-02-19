@@ -26,7 +26,7 @@ function batch_problem(;
     nwindows=15,
     buffer=200,
     centersize=16, 
-    threaded=false,
+    threaded=true,
 )
     ## Define connectivity
     # Set theta
