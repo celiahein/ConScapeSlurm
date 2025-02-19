@@ -1,28 +1,33 @@
+println("Starting ConScape asessment on $(Threads.nthreads()) cores...")
 println("Loading packages...")
+
 using Pkg
 # Pkg.activate("ConScapeJobs/")
-Pkg.instantiate() 
+# Pkg.instantiate() 
 using ConScape
 using ConScapeJobs
-using ConScape.Plots
 using JSON3
 using GLM
 using Statistics
 using StatsBase
 using SparseArrays
+using UnicodePlots
+
+datadir = ConScapeJobs.datadir
 
 println("Loading problem...")
-batch_problem = ConScapeJobs.batch_problem()
+batch_problem = ConScapeJobs.batch_problem(; threaded=false)
 rast = ConScapeJobs.load_raster()
+println("RasterStack of size $(size(rast)) loaded lazily")
 
-assessment_json = "assessment.json"
-if isfile(assessment_json)
+assessment_json = joinpath(datadir, "assessment.json")
+# if isfile(assessment_json)
     assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
-else
+# else
     println("Running assess...")
-    @time assessment = ConScape.assess(batch_problem, rast; verbose=false)
+    @time assessment = ConScape.assess(batch_problem, rast; verbose=true)
     JSON3.write(assessment_json, assessment)
-end
+# end
 
 
 ###
@@ -30,8 +35,7 @@ end
 
 
 function sample_performance(a::ConScape.NestedAssessment;
-    nwindows=16,
-    nbatches=10,
+    nwindows=16, nbatches=10,
 ) 
     jobs = map(wa -> wa.njobs, a.assessments[a.mask])
     x, i = findmax(jobs)
@@ -98,29 +102,31 @@ function sample_performance(a::ConScape.NestedAssessment;
     )
 end
 
-estimates_json = "estimates.json"
-if isfile(estimates_json)
-    estimates = JSON3.read("estimates.json", NamedTuple)
-else
+estimates_json = joinpath(datadir, "estimates.json")
+# if isfile(estimates_json)
+    estimates = JSON3.read(estimates_json, NamedTuple)
+# else
     println("Estimates run-time and memory use...")
     estimates = sample_performance(assessment)
     JSON3.write(estimates_json, estimates)
-end
+# end
 
-println("Generating plots")
-estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
+# println("Generating plots")
+# estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 
-compute_map = heatmap(rotl90(reshape(estimates.compute_estimates, assessment.shape)))
-savefig(compute_map, "compute_map.png")
+c = heatmap(rotl90(reshape(estimates.compute_estimates, assessment.shape)))
+display(c)
+# savefig(compute_map, joinpath(datadir, "compute_map.png"))
 
 # sorted_indices = last.(sort(max_sizes[inds] .=> inds; rev=true))
 h = histogram(estimates.compute_estimates[assessment.mask] / 60; 
-    bins=20,
-    xlabel="minutes",
-    ylabel="jobs",
-    title="Window computations"
+    nbins=20,
+    xlabel="jobs",
+    ylabel="minutes",
+    title="Windows grouped by computation time"
 )
-savefig(h, "compute_hist.png")
+display(h)
+# savefig(h, joinpath(datadir, "compute_hist.png"))
 # inds = assessment.indices
 # compute_sorted_indices = last.(sort(estimates.compute_estimates[inds] .=> inds; rev=true))
 # assessment.assessments[assessment.indices[1]]

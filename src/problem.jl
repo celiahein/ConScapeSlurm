@@ -1,3 +1,5 @@
+datadir = "/cluster/projects/nn11055k/conscape/data/"
+
 # Data
 function load_raster()
     # Package test data
@@ -6,7 +8,6 @@ function load_raster()
     # target_qualities_path = qualities_path = joinpath(datadir, "qualities_sno_2000.asc")
 
     # User data
-    datadir = "/home/NINA.NO/rafael.schouten/Mounts/scratch/tmp_raf/"
     qualities_path = joinpath(datadir, "TemperateHSM.tif")
     target_qualities_path = joinpath(datadir, "TemperateHSM_target.tif")
 
@@ -25,6 +26,7 @@ function batch_problem(;
     nwindows=15,
     buffer=200,
     centersize=16, 
+    threaded=false,
 )
     ## Define connectivity
     # Set theta
@@ -46,12 +48,11 @@ function batch_problem(;
     
     # Specify the windowing pattern
     windowed_problem = ConScape.WindowedProblem(problem; 
-        buffer, centersize, threaded=false
+        buffer, centersize, threaded
     )
 
     # Specify the batch job windowing
-    jobdir = joinpath(dirname(pathof(ConScapeJobs)), "..", "data")
-    datapath = joinpath(jobdir, "outputs")
+    datapath = joinpath(datadir, "outputs")
     return ConScape.BatchProblem(windowed_problem; 
         datapath, nwindows
     )

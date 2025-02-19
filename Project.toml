@@ -4,9 +4,8 @@ authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
 
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
-BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
 ConScape = "2ba2d6f2-f651-5162-bda8-601e45ce5244"
-Cthulhu = "f68482b8-f384-11e8-15f7-abe071a5a75f"
 DiskArrays = "3c3547ce-8d99-4f5e-a174-61eb10b00ae3"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
@@ -14,10 +13,10 @@ PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 Rasters = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [compat]
 ArchGDAL = "0.10.8"
 ConScape = "0.3.0"
-DiskArrays = "0.4.8"
 PrecompileTools = "1.2.1"
 Rasters = "0.14.2"
