@@ -6,6 +6,7 @@ authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
 ConScape = "2ba2d6f2-f651-5162-bda8-601e45ce5244"
+DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 DiskArrays = "3c3547ce-8d99-4f5e-a174-61eb10b00ae3"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"

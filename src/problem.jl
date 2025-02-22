@@ -18,7 +18,8 @@ function load_raster()
 
     affinities = zerotonan.(qualities)
 
-    return RasterStack((; qualities, target_qualities, affinities))
+    st = RasterStack((; qualities, target_qualities, affinities))
+    return DiskArrays.pad(st, (X=(200, 200), Y=(200, 200)))
 end
 
 # Problem
