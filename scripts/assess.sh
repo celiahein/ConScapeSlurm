@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=nn11055k
-#SBATCH --job-name='assess_ConScape'
+#SBATCH --job-name='assessCS'
 #SBATCH --time=1:00:00
 #SBATCH --ntasks=1                
 #SBATCH --cpus-per-task=4

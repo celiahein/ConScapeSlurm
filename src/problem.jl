@@ -19,6 +19,7 @@ function load_raster()
     affinities = zerotonan.(qualities)
 
     st = RasterStack((; qualities, target_qualities, affinities))
+    # Pad the raster border with the buffer size
     return DiskArrays.pad(st, (X=(200, 200), Y=(200, 200)))
 end
 
@@ -59,25 +60,26 @@ function batch_problem(;
     )
 end
 
-# Precompile the problem so that it can happen on one thread,
-# rather than while all threads are active.
-@compile_workload begin
-    # Subset a small raster
-    full_rast = load_raster()
-    # Get a chunk form the middle area
-    ranges = map(size(full_rast)) do s
-        a = div(s, 2) 
-        max(a - 24, 1):min(a + 25, s)
-    end
-    rast = full_rast[ranges...]
-    batch = batch_problem(
-        nwindows=1,
-        buffer=10, 
-        centersize=5, 
-    ) 
-    # Just precompile the inner problem
-    # problem = batch.problem.problem
-    # workspace = ConScape.init(problem, rast)
-    # ConScape.solve!(workspace, problem)
-    # ConScape.assess(problem, rast)
-end
+# Precompile the ConScapeJobs problem so this happens once,
+# rather than at the start of every slurm job
+# @compile_workload begin
+#     # Subset a small raster
+#     full_rast = load_raster()
+#     # Get a chunk from the middle of the raster that has values
+#     ranges = map(size(full_rast)) do s
+#         a = div(s, 2) 
+#         max(a - 2050, 1):min(a - 2000, s)
+#     end
+#     rast = full_rast[ranges...]
+#     bp = batch_problem(
+#         nwindows=1,
+#         buffer=10, 
+#         centersize=5, 
+#     ) 
+#     p = bp.problem.problem;
+#     workspace = ConScape.init(p, rast)
+#     ConScape.solve!(workspace, p)
+#     workspace = ConScape.init(bp, rast)
+#     assessment = ConScape.assess(bp, rast)
+#     ConScape.solve!(workspace, bp, 1)
+# end

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=nn11055k
-#SBATCH --job-name='mosaic_ConScape'
-#SBATCH --time=0:30:0
+#SBATCH --job-name='mosaicCS'
+#SBATCH --time=1:00:0
 #SBATCH --mem-per-cpu=8G 
 #SBATCH --cpus-per-task=1
 #SBATCH --ntasks=1                

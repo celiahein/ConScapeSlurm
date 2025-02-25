@@ -1,16 +1,13 @@
 #!/bin/bash
 #SBATCH --account=nn11055k
-#SBATCH --job-name='batch_solve_ConScape'
-#SBATCH --time=3:0:0
-#SBATCH --mem-per-cpu=3G 
-#SBATCH --cpus-per-task=4
+#SBATCH --job-name='batchCS'
+#SBATCH --time=1:30:0
 #SBATCH --ntasks=1
-#SBATCH --array=0-199
-       # we start at 0 instead of 1 for this
-                                  # example, as the $SLURM_ARRAY_TASK_ID
-                                  # variable starts at 0
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=2G
+#SBATCH --array=0-199 # Start at 0 not 1!
 set -o errexit  # Exit the script on any error
 set -o nounset  # Treat any unset variables as an error
-module --quiet purge   # clear any inherited modulesk
+module --quiet purge   # Clear any inherited modules
 module load Julia/1.10.5-linux-x86_64
-julia --threads=1 --project=.. run_job.jl
+julia --threads=4 --project=.. run_job.jl

@@ -1,8 +1,23 @@
-println("Starting ConScape asessment on $(Threads.nthreads()) cores...")
+##################
+# Batch Assessment
+##################
+
+# It is reccomended to run this script as a SLURM batch using `sbatch assess.sh`
+# Then, run over the script interactively to view plots and assessment details as needed.
+
+# All heavy computations are stored to JSON files and skpped if the files are found, 
+# so using this script on the login node is ok IF it has already been run with `sbatch`
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# DO NOT run this scripts in login nodes without running with `sbatch assess.sh` first.
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+println("Starting ConScape assessment on $(Threads.nthreads()) cores...")
 println("Loading packages...")
 
 using Pkg
-Pkg.activate("ConScapeJobs/")
+using Revise
+# Pkg.activate("ConScapeJobs/") # May be needed in interactive use
 # Pkg.instantiate() 
 using ConScape
 using ConScapeJobs
@@ -15,22 +30,24 @@ using UnicodePlots
 
 datadir = ConScapeJobs.datadir
 
+combined_rast_path = joinpath(datadir, "outputs/combined.tif")
+
 println("Loading problem...")
 batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.load_raster()
 println("RasterStack of size $(size(rast)) loaded lazily")
 
 assessment_json = joinpath(datadir, "assessment.json")
+original_assessment_json = joinpath(datadir, "original_assessment.json")
 if isfile(assessment_json)
     assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
+    original_assessment = JSON3.read(original_assessment_json, ConScape.NestedAssessment)
 else
     println("Running assess...")
     @time assessment = ConScape.assess(batch_problem, rast; verbose=true)
-    open(assessment_json; write=true) do io
-        JSON3.write(io, assessment)
-    end
+    JSON3.write(assessment_json, assessment)
+    JSON3.write(original_assessment_json, assessment)
 end
-
 
 ###
 # Find a job with a wide range of window sizes
@@ -121,13 +138,29 @@ end
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 estimates.allocations / 1e9
 
-c = UnicodePlots.heatmap(rotl90(reshape(estimates.compute_estimates, assessment.shape)))
-# savefig(compute_map, joinpath(datadir, "compute_map.png"))
-
 nthreads = 4
-h = UnicodePlots.histogram(estimates.compute_estimates[assessment.mask] / 60 / nthreads; 
+c = UnicodePlots.heatmap(replace(rotl90(reshape(estimates.compute_estimates, assessment.shape) ./ 60 ./ nthreads), 0.0 => NaN);
+    title="Estimated compute minutes ($nthreads core)",
+    width=40,
+)
+
+h = UnicodePlots.histogram(estimates.compute_estimates[assessment.mask] ./ 60 ./ nthreads; 
     nbins=20,
     xlabel="jobs",
     ylabel="minutes",
-    title="Windows grouped by computation time"
+    title="Batch computation times ($nthreads core)"
 )
+
+# Trouble shooting after run
+
+# Show all original jobs
+original_assessment
+# Current status
+reassessment = ConScape.reassess(batch_problem, original_assessment)
+# For a second round of batches for failed SLURM jobs, uncomment and run this line
+# which replaces the job assessment with the reassment - removing completed jobs:
+
+# JSON3.write(assessment_json, reassessment)
+# assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
+
+# After that you can launch run_job.sh with --array=0-[reassessment.njobs-1] - renumbered from 0
