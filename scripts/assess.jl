@@ -16,7 +16,7 @@ println("Starting ConScape assessment on $(Threads.nthreads()) cores...")
 println("Loading packages...")
 
 using Pkg
-using Revise
+# using Revise
 # Pkg.activate("ConScapeJobs/") # May be needed in interactive use
 # Pkg.instantiate() 
 using ConScape
@@ -30,11 +30,10 @@ using UnicodePlots
 
 datadir = ConScapeJobs.datadir
 
-combined_rast_path = joinpath(datadir, "outputs/combined.tif")
-
 println("Loading problem...")
 batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.load_raster()
+
 println("RasterStack of size $(size(rast)) loaded lazily")
 
 assessment_json = joinpath(datadir, "assessment.json")
@@ -89,7 +88,7 @@ function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
     )
 
     # max_sizes = map(x -> length(x) > 0 ? maximum(prod, x) : 0, inner_window_sizes)
-    sizes = grid_sizes[map(last, results.window_elapsed)]
+    sizes = grid_sizes[selected_window_indices]
     lengths = prod.(sizes) / 1e6 # divide by 1e6 just for numerical stability
     times = map(first, results.window_elapsed)
     data = (; lengths, times)
@@ -151,12 +150,14 @@ h = UnicodePlots.histogram(estimates.compute_estimates[assessment.mask] ./ 60 ./
     title="Batch computation times ($nthreads core)"
 )
 
+assessment
+
 # Trouble shooting after run
 
 # Show all original jobs
-original_assessment
+# original_assessment
 # Current status
-reassessment = ConScape.reassess(batch_problem, original_assessment)
+# reassessment = ConScape.reassess(batch_problem, original_assessment)
 # For a second round of batches for failed SLURM jobs, uncomment and run this line
 # which replaces the job assessment with the reassment - removing completed jobs:
 
