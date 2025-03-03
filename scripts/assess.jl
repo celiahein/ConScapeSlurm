@@ -15,10 +15,11 @@
 println("Starting ConScape assessment on $(Threads.nthreads()) cores...")
 println("Loading packages...")
 
-using Pkg
-using Revise
-Pkg.activate("ConScapeJobs/") # May be needed in interactive use
+# May be needed in interactive use
+# using Pkg, Revise
+# Pkg.activate("ConScapeJobs/")
 # Pkg.instantiate() 
+
 using ConScape
 using ConScapeJobs
 using JSON3
@@ -34,20 +35,15 @@ datadir = ConScapeJobs.datadir
 println("Loading problem...")
 batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.load_raster()
-
 println("RasterStack of size $(size(rast)) loaded lazily")
 
 assessment_json = joinpath(datadir, "assessment.json")
 original_assessment_json = joinpath(datadir, "original_assessment.json")
-if isfile(assessment_json)
-    assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
-    original_assessment = JSON3.read(original_assessment_json, ConScape.NestedAssessment)
-else
-    println("Running assess...")
-    @time assessment = ConScape.assess(batch_problem, rast; verbose=true)
-    JSON3.write(assessment_json, assessment)
-    JSON3.write(original_assessment_json, assessment)
-end
+
+println("Running assess...")
+@time assessment = ConScape.assess(batch_problem, rast; verbose=true)
+JSON3.write(assessment_json, assessment)
+JSON3.write(original_assessment_json, assessment)
 
 ###
 # Find a job with a wide range of window sizes
@@ -125,16 +121,11 @@ function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
     )
 end
 
+println("Estimating run-time and memory use...")
 estimates_json = joinpath(datadir, "estimates.json")
-if isfile(estimates_json)
-    estimates = JSON3.read(estimates_json, NamedTuple)
-else
-    println("Estimates run-time and memory use...")
-    estimates = sample_performance(batch_problem, rast, assessment)
-    JSON3.write(estimates_json, estimates)
-end
+estimates = sample_performance(batch_problem, rast, assessment)
+JSON3.write(estimates_json, estimates)
 
-# println("Generating plots")
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 estimates.allocations / 1e9
 
@@ -151,18 +142,4 @@ h = UnicodePlots.histogram(estimates.compute_estimates[assessment.mask] ./ 60 ./
     title="Batch computation times ($nthreads core)"
 )
 
-assessment
-
-# Trouble shooting after run
-
-# Show all original jobs
-# original_assessment
-# Current status
-# reassessment = ConScape.reassess(batch_problem, original_assessment)
-# For a second round of batches for failed SLURM jobs, uncomment and run this line
-# which replaces the job assessment with the reassment - removing completed jobs:
-
-# JSON3.write(assessment_json, reassessment)
-# assessment = JSON3.read(assessment_json, ConScape.NestedAssessment)
-
-# After that you can launch run_job.sh with --array=0-[reassessment.njobs-1] - renumbered from 0
+display(assessment)
