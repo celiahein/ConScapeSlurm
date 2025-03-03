@@ -1,6 +1,3 @@
-# using Pkg
-# using Revise
-# Pkg.activate("ConScapeJobs/") # May be needed in interactive use
 import ArchGDAL
 using Rasters
 using ConScape

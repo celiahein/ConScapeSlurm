@@ -16,8 +16,8 @@ println("Starting ConScape assessment on $(Threads.nthreads()) cores...")
 println("Loading packages...")
 
 using Pkg
-# using Revise
-# Pkg.activate("ConScapeJobs/") # May be needed in interactive use
+using Revise
+Pkg.activate("ConScapeJobs/") # May be needed in interactive use
 # Pkg.instantiate() 
 using ConScape
 using ConScapeJobs
@@ -27,6 +27,7 @@ using Statistics
 using StatsBase
 using SparseArrays
 using UnicodePlots
+using Plots
 
 datadir = ConScapeJobs.datadir
 

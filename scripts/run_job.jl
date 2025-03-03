@@ -12,9 +12,9 @@ end
 println("Starting task $batch on $(Threads.nthreads()) threads...")
 
 assessment_path = joinpath(ConScapeJobs.datadir, "assessment.json")
-assessment = JSON3.read(assessment_path, ConScape.NestedAssessment)
+assessment = JSON3.read(assessment_path, ConScape.NestedAssessment) 
 batch_problem = ConScapeJobs.batch_problem()
 GC.gc()
 rast = ConScapeJobs.load_raster()
 
-@time ConScape.solve(batch_problem, rast, assessment, batch)
+@time ConScape.solve(batch_problem, rast, assessment, batch; verbose=true)

@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.5"
+julia_version = "1.10.7"
 manifest_format = "2.0"
 project_hash = "420802cf62d6d3c98e66b0a6a4047bc34e78841d"
 
@@ -283,7 +283,9 @@ weakdeps = ["InverseFunctions"]
 
 [[deps.ConScape]]
 deps = ["ArnoldiMethod", "CommonSolve", "ConstructionBase", "DelimitedFiles", "Graphs", "LaTeXStrings", "LinearAlgebra", "LinearSolve", "ProgressLogging", "Rasters", "SimpleWeightedGraphs", "SparseArrays", "Test"]
-path = "/cluster/home/rafaqz/.julia/dev/ConScape"
+git-tree-sha1 = "07ed49e9e3bfed6a94fec565752d8e2e67c5fb7c"
+repo-rev = "alg_efficiency"
+repo-url = "https://github.com/ConScape/ConScape.jl.git"
 uuid = "2ba2d6f2-f651-5162-bda8-601e45ce5244"
 version = "0.3.0"
 
@@ -1458,7 +1460,7 @@ uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.Rasters]]
 deps = ["Adapt", "ColorTypes", "CommonDataModel", "ConstructionBase", "Dates", "DimensionalData", "DiskArrays", "Extents", "FillArrays", "Flatten", "GeoFormatTypes", "GeoInterface", "GeometryOpsCore", "LinearAlgebra", "Missings", "Mmap", "OffsetArrays", "ProgressMeter", "RecipesBase", "Reexport", "Setfield", "Statistics"]
-path = "/cluster/home/rafaqz/.julia/dev/Rasters"
+git-tree-sha1 = "4a92c034239349846493895a35b8609dcfc2944e"
 uuid = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 version = "0.14.2"
 
