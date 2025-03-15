@@ -1,5 +1,5 @@
-datadir = "/cluster/projects/nn11055k/conscape/data/"
-# datadir = "/home/NINA.NO/rafael.schouten/Mounts/scratch/tmp_raf/"
+# datadir = "/cluster/projects/nn11055k/conscape/data/"
+datadir = "/home/NINA.NO/rafael.schouten/Mounts/scratch/tmp_raf/"
 # Data
 function load_raster()
     # Package test data
@@ -16,7 +16,7 @@ function load_raster()
     # Here we assume affinities and qualities are the same
     affinities = qualities
 
-    st = view(RasterStack((; qualities, target_qualities, affinities)), X=10000:15000, Y=10000:15000)
+    st = view(RasterStack((; qualities, target_qualities, affinities)), X=10000:12000, Y=10000:12000)
     # Pad the raster border with the buffer size
     return DiskArrays.pad(st, (X=(200, 200), Y=(200, 200)))
 end

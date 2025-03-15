@@ -15,11 +15,6 @@
 println("Starting ConScape assessment on $(Threads.nthreads()) cores...")
 println("Loading packages...")
 
-# May be needed in interactive use
-# using Pkg, Revise
-# Pkg.activate("ConScapeJobs/")
-# Pkg.instantiate() 
-
 using ConScape
 using ConScapeJobs
 using JSON3
@@ -46,7 +41,7 @@ JSON3.write(assessment_json, assessment)
 JSON3.write(original_assessment_json, assessment)
 
 ###
-# Find a job with a wide range of window sizes
+# Find a job with a wide range of window sizes, and run a subset
 
 function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
     nwindows=16, nbatches=10,
@@ -129,7 +124,7 @@ JSON3.write(estimates_json, estimates)
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 estimates.allocations / 1e9
 
-nthreads = 4
+nthreads = 16
 c = UnicodePlots.heatmap(replace(rotl90(reshape(estimates.compute_estimates, assessment.shape) ./ 60 ./ nthreads), 0.0 => NaN);
     title="Estimated compute minutes ($nthreads core)",
     width=40,
