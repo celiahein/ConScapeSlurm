@@ -10,16 +10,9 @@ Threads.nthreads()
 
 assessment_path = joinpath(ConScapeJobs.datadir, "assessment.json")
 assessment = JSON3.read(assessment_path, ConScape.NestedAssessment) 
-batch_problem = ConScapeJobs.batch_problem(; threaded=true)
+batch_problem = ConScapeJobs.batch_problem(; threaded=false)
 rast = ConScapeJobs.load_raster()
 
-
-
-missed = map(window_ranges[notstored]) do rs
-    rast[rs...]
-end
-plot(missed[4])
-notstored = .!isdir.(paths)
 i = assessment.indices[10]
 paths = ConScape.batch_paths(batch_problem, rast)[assessment.indices]
 isdir.(paths)
@@ -30,41 +23,41 @@ isdir.(paths)
 #     stack1 = RasterStack(path)
 #     display(plot(stack1))
 # end;
-plot(RasterStack(paths[2]))
 
+# missed = map(window_ranges[notstored]) do rs
+#     rast[rs...]
+# end
+# plot(missed[4])
+# notstored = .!isdir.(paths)
 
-i = 8
-isdir.(paths)
-window_ranges = ConScape._window_ranges(batch_problem, rast)[assessment.indices]
-window_rast = rast[window_ranges[i]...]
-res = RasterStack(paths[i])
-plot(res)
-plot(window_rast) 
-size(res)
-size(window_rast) 
+i = 20
 wa = assessment.assessments[assessment.indices][i]
-RasterStack.(paths)
+window_ranges = ConScape.window_ranges(batch_problem, rast)[assessment.indices]
+window_rast = rast[window_ranges[i]...]
+# res = RasterStack(paths[i])
+# plot(res)
+plot(window_rast[(:source_qualities, :target_qualities)]; size=(1200, 800))
+# size(res)
+# RasterStack.(paths)
 
 size(window_rast)
 count(>(0), window_rast.target_qualities[201:end-200, 201:end-200])
 # window_rast.target_qualities[201:end-200, 201:end-200] .= 0.000001
+wa.indices
+outputs3 = ConScape.solve(batch_problem.problem, window_rast; 
+    indices=wa.indices, verbose=true
+);
 
-plot(wrast.qualities)
-outputs = ConScape.solve(batch_problem.problem, window_rast; 
-    selected_window_indices=wa.indices, mosaic_return=false
-)
+plot(outputs3; size=(1200, 800))
+M = Rasters.mosaic(sum, outputs3)
 
-length(outputs)
-plot(outputs[1])
-outputs[2].ch
-length(outputs)
+rebuild(M; missingval=0.0)
+
+plot(window_rast)
+plot(window_rast)
+plot(M; size=(1200, 800))
+plot(window_rast.target_qualities)
 
 for (i, o) in enumerate(outputs)
-    ismissing(o) || display(plot(o.betk; title=string(i)))
-end
-
-M = Rasters.mosaic(sum, outputs)
-plot(M)
-for batch in 2:assessment.njobs
-    @time ConScape.solve(batch_problem, rast, assessment, batch; verbose=true)
+    ismissing(o) || display(plot(o; title=string(i)))
 end

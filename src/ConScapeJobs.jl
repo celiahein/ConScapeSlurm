@@ -1,12 +1,12 @@
 module ConScapeJobs
 
-using Rasters
+using ConScape
 using PrecompileTools
+using Rasters
 
 import DiskArrays
 import ArchGDAL
-import ConScape
-import ConScape as CS
+
 
 include("problem.jl")
 
