@@ -49,14 +49,11 @@ function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
     a = assessment
     jobs = map(wa -> wa.njobs, a.assessments[a.indices])
     x, i = findmax(jobs)
-    window_indices = map(x -> x.indices, a.assessments)
-    all_grid_sizes = map(x -> x.grid_sizes, a.assessments)
-    allocations = @allocated ConScape.init(batch_problem, rast, i; 
-        verbose=true, batch_indices=a.indices, window_indices, grid_sizes=all_grid_sizes
-    )
+    allocations = @allocated init(batch_problem, rast, assessment, i; verbose=true)
     allocations / 1e6
     # How many windows to run for timing analysis
     # Find the most variable batch with nwindows or more
+    all_grid_sizes = map(x -> x.grid_sizes, a.assessments)
     stds = map(all_grid_sizes) do sizes
         length(sizes) > 0 || return 0.0
         targets = map(last, sizes)
@@ -68,20 +65,18 @@ function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
     indices = a.assessments[selected_batch].indices
     selected_window_indices = sample(indices, nwindows; replace=false)
     grid_sizes = all_grid_sizes[selected_batch]
-    selected_batch_ranges = ConScape._window_ranges(batch_problem, rast)[selected_batch]
+    selected_batch_ranges = ConScape.window_ranges(batch_problem, rast)[selected_batch]
     batch_rast = rast[selected_batch_ranges...]
     window_problem = batch_problem.problem
-    wrs = ConScape._window_ranges(window_problem, batch_rast)[indices]
     workspace = ConScape.init(window_problem, batch_rast; 
-        selected_window_indices, grid_sizes, verbose=true,
+        indices=selected_window_indices, grid_sizes, verbose=true
     );
-    results = ConScape.solve!(workspace, window_problem; 
-        verbose=false, timed=true
-    )
+    results = ConScape.solve(workspace; verbose=false, timed=true)
 
     # max_sizes = map(x -> length(x) > 0 ? maximum(prod, x) : 0, inner_window_sizes)
     sizes = grid_sizes[selected_window_indices]
     lengths = prod.(sizes) / 1e6 # divide by 1e6 just for numerical stability
+    @show keys(results)
     times = map(first, results.window_elapsed)
     data = (; lengths, times)
     model = lm(@formula(times ~ lengths), data)
@@ -117,8 +112,8 @@ function sample_performance(batch_problem, rast, a::ConScape.NestedAssessment;
 end
 
 println("Estimating run-time and memory use...")
-estimates_json = joinpath(datadir, "estimates.json")
 estimates = sample_performance(batch_problem, rast, assessment)
+estimates_json = joinpath(datadir, "estimates.json")
 JSON3.write(estimates_json, estimates)
 
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
