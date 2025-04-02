@@ -1,11 +1,6 @@
 nothing
 using ConScape
 using ConScapeJobs
-using JSON3
-using DiskArrays
-# Scalar reads over the network could take hours, 
-# it has to error instead so the batch is killed.
-DiskArrays.allowscalar(false)
 
 idkey = "SLURM_ARRAY_TASK_ID"
 batch = if haskey(ENV, idkey) 
@@ -15,10 +10,13 @@ else
 end
 println("Starting task $batch on $(Threads.nthreads()) threads...")
 
-assessment_path = joinpath(ConScapeJobs.datadir, "assessment.json")
-assessment = JSON3.read(assessment_path, ConScape.NestedAssessment) 
+# Loade the assessment
+assessment = ConScapeJobs.assessment()
 batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.load_raster();
+rast = ConScapeJobs.raster();
+# Initialise the batch problem with the raster data and assessment
 batch_init = init(batch_problem, rast, assessment; verbose=true)
-GC.gc()
+# Garbage collect before we start, just in case...
+GC.gc() 
+# Solve
 @time solve(batch_init, batch; verbose=true)

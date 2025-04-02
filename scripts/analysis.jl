@@ -1,34 +1,23 @@
 nothing
 using Pkg, Revise
 Pkg.activate("ConScapeJobs/")
+
 using ConScape
 using ConScapeJobs
-using JSON3
-using Plots
 using Rasters
+using Plots
+using JSON3
+
 Threads.nthreads()
 
-assessment_path = joinpath(ConScapeJobs.datadir, "assessment.json")
-assessment = JSON3.read(assessment_path, ConScape.NestedAssessment) 
+datadir = ConScapeJobs.path()
+
+assessment =  ConScapeJobs.assessment()
 batch_problem = ConScapeJobs.batch_problem(; threaded=false)
-rast = ConScapeJobs.load_raster()
+rast = ConScapeJobs.raster()
 
 i = assessment.indices[10]
 paths = ConScape.batch_paths(batch_problem, rast)[assessment.indices]
-
-plot(outputs3; size=(1200, 800))
-M = Rasters.mosaic(sum, outputs3)
-
-rebuild(M; missingval=0.0)
-
-plot(window_rast)
-plot(window_rast)
-plot(M; size=(1200, 800))
-plot(window_rast.target_qualities)
-
-for (i, o) in enumerate(outputs)
-    ismissing(o) || display(plot(o; title=string(i)))
-end
 
     # Subset a small raster
     full_rast = ConScapeJobs.load_raster()
@@ -49,13 +38,8 @@ using Rasters
 using ConScape
 import ConScapeJobs
 
-datadir = ConScapeJobs.datadir
-
-batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.load_raster()
-
-paths = filter(isdir, ConScape.batch_paths(batch_problem, rast))
-r1 = RasterStack(first(paths); lazy=true)
+paths = ConScape.batch_paths(batch_problem, rast)
+r1 = RasterStack(paths[re.indices[1]]; lazy=true)
 
 # This will take about 2 minutes
 npaths = length(paths)
@@ -88,56 +72,10 @@ for st in stacks
 end
 Plots.plot(stacks[4].betk)
 
-onlynans
-combined = mosaic(sum, stacks[101:end]; to=rast, lazy=true, force=true, progress=false)
-size(combined)
-using Plots
-plot(combined.ch)
-plot(combined.betk)
-
-assessment_path = joinpath(ConScapeJobs.datadir, "assessment.json")
-assessment = JSON3.read(assessment_path, ConScape.NestedAssessment) 
 assessment
-# ranges = vec(ConScape.window_ranges(batch_problem, rast))
-# corners = map(first, ranges)
-batch = 2004 # findfirst(==(paths[104]), ConScape.batch_paths(batch_problem, rast)[assessment.indices])
-batch_ranges = ConScape.window_ranges(batch_problem, rast)[assessment.indices[batch]]
-batch_path = ConScape.batch_paths(batch_problem, rast)[assessment.indices[batch]]
-batch_rast = rast[batch_ranges...]
-batch_result = RasterStack(batch_path; missingval=NaN)
-Plots.plot(batch_rast)
-Plots.plot(batch_result)
-plot(merge(batch_result, batch_rast))
-Plots.plot(batch_rast.target_qualities)
-batch_init = init(batch_problem, rast, assessment)
-batch_init isa ConScape.BatchInit
-window_init = init(batch_init, batch)
-window_rast = window_init.rast[window_init.ranges[12]...]
-Plots.plot(window_rast)
-results = map(1:20) do i
-    i = 12
-    @show i
-    ranges = window_init.ranges[i]
-    # verbose && println("Initialising window from ranges $ranges...")
-    # rast = ConScape._get_window_with_zeroed_buffer(view, ConScape.problem(window_init), window_init.rast, ranges)
-    # grid_rast = window_init.rast[ranges...]
-    # mgi = init(window_init.problem.problem, grid_rast)
-    # try
-    mgi = init(window_init, i);
-    solve(mgi)
-    # catch
-        # missing
-    # end
-    # Convert cost matrix to graph, todo: is `permute=false` needed
-    # graph = ConScape.SimpleWeightedDiGraph(ConScape.costmatrix(g); permute=false)
-    # Find the subgraphs
-    # scc = strongly_connected_components(graph)
-end;
-solve(init(window_init, 12))
+re = ConScape.reassess(batch_problem, assessment)
+findall(in(re.indices), assessment.indices)
 
-for res in results2
-    ismissing(res) && continue
-    display(Plots.plot(res))
-end
-
-display(Plots.plot(results2[3]))
+filenames = (betk=joinpath(datadir, "output_betk.tif"), ch=joinpath(datadir, "output_ch.tif"))
+st = RasterStack(filenames; lazy=true)
+plot(min.(250000, st.betk); size=(1000, 1000), colormap=:inferno)

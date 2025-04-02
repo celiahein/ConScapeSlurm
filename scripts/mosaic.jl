@@ -1,46 +1,36 @@
-import ArchGDAL
 using Rasters
 using ConScape
 import ConScapeJobs
 
-datadir = ConScapeJobs.datadir
+datadir = ConScapeJobs.files()["path"]
 
+# Load problem and raster
 batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.load_raster()
+rast = ConScapeJobs.raster()
+assessment = ConScapeJobs.assessment()
 
-paths = filter(isdir, ConScape.batch_paths(batch_problem, rast))
-r1 = RasterStack(first(paths); lazy=true)
+# Get all the filepaths that we made raster files for
+paths = filter(isdir, ConScape.batch_paths(batch_problem, rast)[assessment.indices])
+# Create lazy RasterStacks for all of them
+stacks = RasterStack.(paths[1:10]; lazy=true, missingval=NaN)
+filename = joinpath(datadir, "output.tif")
+GC.gc()
 
-# This will take about 2 minutes
-npaths = length(paths)
-@time stacks = [
-    begin
-        @show i
-        # GC every hundred stacks
-        rem(i, 100) == 0 && GC.gc()
-        RasterStack(path; lazy=true) 
-    end
-    for (i, path) in enumerate(paths)
-];  
+# Mosaic
+# Some care is needed here, both in making a file that is easy to use later
+# and in making the mosaic faster. If we chunk it is much faster because
+# Each mosaic only writes to a small area each time, rather than whole columns.
+# This will also make reading subsets faster for users of the data.
+@time combined = mosaic(sum, stacks; 
+    to=rast,
+    filename, # Mosaic to disk
+    force=true, # Force overwriting existing files
+    read=true, # Read every region from disk before the mosaic
+    gc=50, # Garbage collect every 50 rasters to control memory
+    missingval=NaN, # Keep it the same for everything
+    chunks=(128, 128), # 128 is faster than 256 and much faster than the default columns
+    options="BIGTIFF" => "YES", # In case its larger than 4GB, but also faster somehow
+);
 
-filename_base = joinpath(datadir, "outputs/combined")
-filenames = map(keys(r1)) do k
-    rasters = map(s -> s[k], stacks)
-    filename = filename_base * "_$k.tif"
-    mosaic(sum, rasters; to=rast, filename, lazy=true, force=true, progress=false)
-end
-
-# combined = mosaic(sum, stacks; to=rast, filename, lazy=true, force=true, progress=false)
-
-# st = RasterStack(filenames; lazy=true)
-# downsampled = st[1:3:end, 1:3:end]
-# south = st.combined_ch[X=0 .. 2.5e5, Y=6.5e6 .. 6.7e6]
-# plot(south[1:3:end, 1:3:end]; size=(1000, 1000))
-# using Plots
-# plot(downsampled; size=(1000, 1000))
-
-# oa = original_assessment
-# allpaths = ConScape.batch_paths(batch_problem, rast)
-# plot(RasterStack(allpaths[oa.indices[1005]]))
-# plot(batch)
-# o.indices[1005]
+# Show the chunk pattern in the output
+display(Rasters.eachchunk(combined.ch))

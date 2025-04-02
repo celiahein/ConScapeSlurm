@@ -2,7 +2,7 @@
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "e8dabe9dffa5172d93b6d7ca1d9ac599ec6fef85"
+project_hash = "fee11b67dc749d3e0d5e7a2fcb2e025abf3982f4"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
@@ -1189,7 +1189,7 @@ version = "1.11.0"
 
 [[deps.Rasters]]
 deps = ["Adapt", "ColorTypes", "CommonDataModel", "ConstructionBase", "Dates", "DimensionalData", "DiskArrays", "Extents", "FillArrays", "Flatten", "GeoFormatTypes", "GeoInterface", "GeometryOpsCore", "LinearAlgebra", "Missings", "Mmap", "OffsetArrays", "ProgressMeter", "RecipesBase", "Reexport", "Setfield", "Statistics"]
-git-tree-sha1 = "4a92c034239349846493895a35b8609dcfc2944e"
+path = "/cluster/home/rafaqz/.julia/dev/Rasters"
 uuid = "a3a2b9e3-a471-40c9-b274-f788e487c689"
 version = "0.14.2"
 

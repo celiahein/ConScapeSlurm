@@ -8,12 +8,12 @@ using ConScape
 using ConScapeJobs
 using JSON3
 
-datadir = ConScapeJobs.datadir
+datadir = ConScapeJobs.path()
 assessment_json = joinpath(datadir, "assessment.json")
 original_assessment_json = joinpath(datadir, "original_assessment.json")
 
 batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.load_raster()
+rast = ConScapeJobs.raster()
 original_assessment = JSON3.read(original_assessment_json, ConScape.NestedAssessment) 
 
 # Current status
