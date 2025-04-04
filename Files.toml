@@ -1,7 +1,0 @@
-path = "/cluster/projects/nn11055k/conscape/Bees/Boreal/"
-source_qualities = "BorealHSM.tif"
-target_qualities = "BorealHSM_target.tif"
-affinities = "BorealHSM.tif" # The same as source qualities
-buffer = 200 # 200 * 50m = 10km radius
-nwindows = 15
-centersize = 16

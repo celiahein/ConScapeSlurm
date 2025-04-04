@@ -12,12 +12,10 @@ using StatsBase
 using UnicodePlots
 using Plots
 
-datadir = ConScapeJobs.datadir
-
+datadir = ConScapeJobs.path()
 batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.load_raster()
-assessment_json = joinpath(datadir, "assessment.json")
-assessment = JSON3.read(assessment_json, ConScape.NestedAssessment) 
+assessment = ConScape.assessment()
 
 ###
 # Find a job with a wide range of window sizes, and run a subset
@@ -92,8 +90,7 @@ end
 
 println("Estimating run-time and memory use...")
 estimates = sample_performance(batch_problem, rast, assessment)
-estimates_json = joinpath(datadir, "estimates.json")
-JSON3.write(estimates_json, estimates)
+JSON3.write(ConScapeJobs.estimates_path(), estimates)
 
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 estimates.allocations / 1e9

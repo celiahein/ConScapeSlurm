@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=1500M
-#SBATCH --array=0-811 # Start at 0 not 1!
+#SBATCH --array=0-0 # Start at 0 not 1!
 set -o errexit  # Exit the script on any error
 set -o nounset  # Treat any unset variables as an error
 module --quiet purge   # Clear any inherited modules

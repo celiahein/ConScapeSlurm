@@ -9,17 +9,14 @@ using ConScapeJobs
 using JSON3
 
 datadir = ConScapeJobs.path()
-assessment_json = joinpath(datadir, "assessment.json")
-original_assessment_json = joinpath(datadir, "original_assessment.json")
-
 batch_problem = ConScapeJobs.batch_problem()
 rast = ConScapeJobs.raster()
-original_assessment = JSON3.read(original_assessment_json, ConScape.NestedAssessment) 
+original_assessment = ConScapeJobs.original_assessment()
 
 # Current status
 reassessment = ConScape.reassess(batch_problem, original_assessment)
 
 # After this you can launch run_job.sh with --array=0-[reassessment.njobs-1] - renumbered from 0
-JSON3.write(assessment_json, reassessment)
+JSON3.write(ConScapeJobs.assessment_path(), reassessment)
 
 display(reassessment)
