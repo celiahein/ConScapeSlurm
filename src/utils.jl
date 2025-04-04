@@ -1,17 +1,21 @@
-files() = TOML.parsefile(joinpath(@__DIR__, "..", "Files.toml"))
-path()::String = files()["path"]::String
-assessment() = JSON3.read(joinpath(path(), "assessment.json"), ConScape.NestedAssessment) 
+files() = settings()
+settings() = TOML.parsefile(joinpath(@__DIR__, "..", "Settings.toml"))
+path()::String = settings()["path"]::String
+assessment() = JSON3.read(assessment_path(), ConScape.NestedAssessment) 
+original_assessment() = JSON3.read(original_assessment_path(), ConScape.NestedAssessment) 
+assessment_path() = joinpath(path(), "assessment.json")
+original_assessment_path() = joinpath(path(), "original_assessment.json")
+estimates_path() = joinpath(path(), "estimates.json")
 
 function ConScape.assess()
     datadir = ConScapeJobs.path()
+    assessment_path = ConScapeJobs.assessment_path()
+    original_assessment_path = ConScapeJobs.original_assessment_path()
 
     println("Loading problem...")
     batch_problem = ConScapeJobs.batch_problem()
     rast = ConScapeJobs.raster()
     println("RasterStack of size $(size(rast)) loaded lazily")
-
-    assessment_path = joinpath(datadir, "assessment.json")
-    original_assessment_path = joinpath(datadir, "original_assessment.json")
 
     println("Running ConScape.assess...")
     @time assessment = ConScape.assess(batch_problem, rast; verbose=true)
@@ -23,12 +27,12 @@ function ConScape.assess()
 end
 
 function raster()
-    fileinfo = files()
+    settings = ConScapeJobs.settings()
     datadir = path()
-    source_qualities_path = joinpath(datadir, fileinfo["source_qualities"])
-    target_qualities_path = joinpath(datadir, fileinfo["target_qualities"])
-    affinities_path = joinpath(datadir, fileinfo["affinities"])
-    pad = fileinfo["buffer"]::Int
+    source_qualities_path = joinpath(datadir, settings["source_qualities"])
+    target_qualities_path = joinpath(datadir, settings["target_qualities"])
+    affinities_path = joinpath(datadir, settings["affinities"])
+    pad = settings["buffer"]::Int
 
     # Load rasters lazily
     source_qualities = Raster(source_qualities_path; lazy=true, missingval=NaN)
@@ -48,7 +52,8 @@ function batch_problem(;
     threaded=true,
 )
     # Read window parameters from file if they were not passed in
-    fileinfo = files()
+    datapath = joinpath(path(), "outputs")
+    fileinfo = settings()
     buffer = (isnothing(buffer) ? fileinfo["buffer"] : buffer)::Int
     nwindows = (isnothing(nwindows) ? fileinfo["nwindows"] : nwindows)::Int
     centersize = (isnothing(centersize) ? fileinfo["centersize"] : centersize)::Int
@@ -59,8 +64,5 @@ function batch_problem(;
     )
 
     # Specify the batch job windowing
-    datapath = joinpath(path(), "outputs")
-    return BatchProblem(windowed_problem; 
-        datapath, nwindows
-    )
+    return BatchProblem(windowed_problem; datapath, nwindows)
 end
