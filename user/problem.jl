@@ -2,12 +2,14 @@
 
 # This is the only code you need to edit
 function problem()
+    s = settings()
     ## Define connectivity
-    α = 60 / 3000
+    alpha = s["alpha"]::Float64
+    theta = s["theta"]::Float64
     # Define a distance transformation
     movement_mode = RandomisedShortestPath(ExpectedCost();
-        distance_transformation=x -> exp(-x * α),
-        theta=0.5
+        distance_transformation=x -> exp(-x * alpha),
+        theta,
     )
 
     # Define measures

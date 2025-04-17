@@ -1,0 +1,4 @@
+dataset_name,buffer,nwindows,centersize,alpha,theta,source_qualities,target_qualities,affinities,path
+alpine_bees,200,15,16,0.02,0.5,"AlpineHSM.tif","AlpineHSM_target.tif","AlpineHSM.tif","/cluster/projects/nn11055k/conscape/Bees/Alpine/"
+boreal_bees,200,15,16,0.02,0.5,"BorealHSM.tif","BorealHSM_target.tif","BorealHSM.tif","/cluster/projects/nn11055k/conscape/Bees/Boreal/"
+temperate_bees,200,15,16,0.02,0.5,"TemperateHSM.tif","TemperateHSM_target.tif","TemperateHSM.tif","/cluster/projects/nn11055k/conscape/Bees/Temperate/"

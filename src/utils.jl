@@ -1,14 +1,41 @@
-files() = settings()
-settings() = TOML.parsefile(joinpath(@__DIR__, "..", "Settings.toml"))
+function settings() 
+    # TOML.parsefile(joinpath(@__DIR__, "..", "Settings.toml"))
+    df = CSV.read(joinpath(@__DIR__, "../user", "datasets.csv"), DataFrame)
+    if length(ARGS) > 0
+        dataset_name = ARGS[1]
+        filter(df) do row
+            row.dataset_name == dataset_name
+        end[1, :]
+    else
+        @warn """
+            No ARGS found, using first row of datasets.csv.
+
+            Please specify the dataset name on the command line, e.g. sbatch run.sh dataset_name. 
+            This should match a line in the `dataset_name` column of user/datasets.csv
+            """
+        df[1, :]
+    end
+end
+
 path()::String = settings()["path"]::String
-assessment() = JSON3.read(assessment_path(), ConScape.NestedAssessment) 
-original_assessment() = JSON3.read(original_assessment_path(), ConScape.NestedAssessment) 
 assessment_path() = joinpath(path(), "assessment.json")
 original_assessment_path() = joinpath(path(), "original_assessment.json")
 estimates_path() = joinpath(path(), "estimates.json")
 
+function assessment() 
+    path = assessment_path() 
+    isfile(path) || error("Assessment not found at $path. Did you run assess.sh first?")
+    JSON3.read(path, ConScape.NestedAssessment) 
+end
+function original_assessment() 
+    path = original_assessment_path()
+    isfile(path) || error("Assessment not found at $path. Did you run assess.sh first?")
+    JSON3.read(path, ConScape.NestedAssessment) 
+end
+
 function ConScape.assess()
     datadir = ConScapeJobs.path()
+    isdir(datadir) || error("Data path $datadir not found, check your datasets.csv file")
     assessment_path = ConScapeJobs.assessment_path()
     original_assessment_path = ConScapeJobs.original_assessment_path()
 
