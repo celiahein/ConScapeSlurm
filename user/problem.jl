@@ -1,8 +1,8 @@
 # Problem definition
 
 # This is the only code you need to edit
-function problem()
-    s = settings()
+function problem(args...)
+    s = settings(args...)
     ## Define connectivity
     alpha = s["alpha"]::Float64
     theta = s["theta"]::Float64

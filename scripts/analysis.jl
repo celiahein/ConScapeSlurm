@@ -7,11 +7,15 @@ using ConScapeJobs
 using Rasters
 using Plots
 
+
+# Manually set the dataset if necessary
+dataset_name = "temperate_bees"
+
 # Load assessment, problem and rasters
-datadir = ConScapeJobs.path()
-assessment =  ConScapeJobs.assessment()
-batch_problem = ConScapeJobs.batch_problem(; threaded=false)
-rast = ConScapeJobs.raster()
+datadir = ConScapeJobs.path(dataset_name)
+assessment =  ConScapeJobs.assessment(dataset_name)
+batch_problem = ConScapeJobs.batch_problem(dataset_name; threaded=false)
+rast = ConScapeJobs.raster(dataset_name)
 
 # Check the assessment and reassess
 assessment
@@ -35,3 +39,6 @@ plot(st.ch;
     title=basename(dirname(datadir)) * " Connected Habitat",
     size=(1000, 1000), colormap=:inferno
 )
+
+out = Raster("/cluster/projects/nn11055k/conscape/Bees/Temperate/output_betk.tif"; lazy=true)
+plot(out)
