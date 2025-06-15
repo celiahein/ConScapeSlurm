@@ -27,3 +27,5 @@ Generally, a ConScape workflow looks like this.
 10. Repeat until the map is empty, fixing any issues that may cause the same jobs to fail repeatedly.
 11. Run `sbatch mosaic.sh mydatasetname` for each dataset to mosaic the outputs into rasters.
 12. rsync `output_*` files from the paths in your `datasets.csv` back to your local machine.
+
+If you have any problems following this, please make an issue in the issues tab above. 
