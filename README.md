@@ -1,4 +1,4 @@
-# ConScapeJobs
+# ConScapeSlurm
  
 _SLURM job management for ConScape.jl_
 
