@@ -1,5 +1,5 @@
-name = "ConScapeJobs"
-uuid = "15908a7f-091c-4b54-ac2d-225179da51e4"
+name = "ConScapeSlurm"
+uuid = "33bace6a-ba95-4355-bc00-916d64e208bb"
 authors = ["Rafael Schouten <rafaelschouten@gmail.com>"]
 
 [deps]

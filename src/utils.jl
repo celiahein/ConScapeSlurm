@@ -43,14 +43,14 @@ function original_assessment(args...)
 end
 
 function ConScape.assess(args...)
-    datadir = ConScapeJobs.path(args...)
+    datadir = ConScapeSlurm.path(args...)
     isdir(datadir) || error("Data path $datadir not found, check your datasets.csv file")
-    assessment_path = ConScapeJobs.assessment_path(args...)
-    original_assessment_path = ConScapeJobs.original_assessment_path(args...)
+    assessment_path = ConScapeSlurm.assessment_path(args...)
+    original_assessment_path = ConScapeSlurm.original_assessment_path(args...)
 
     println("Loading problem...")
-    batch_problem = ConScapeJobs.batch_problem(args...)
-    rast = ConScapeJobs.raster(args...)
+    batch_problem = ConScapeSlurm.batch_problem(args...)
+    rast = ConScapeSlurm.raster(args...)
     println("RasterStack of size $(size(rast)) loaded lazily")
 
     println("Running ConScape.assess...")
@@ -63,7 +63,7 @@ function ConScape.assess(args...)
 end
 
 function raster(args...)
-    settings = ConScapeJobs.settings(args...)
+    settings = ConScapeSlurm.settings(args...)
     datadir = settings["path"]
     source_qualities_path = joinpath(datadir, settings["source_qualities"])
     target_qualities_path = joinpath(datadir, settings["target_qualities"])
@@ -88,7 +88,7 @@ function batch_problem(args...;
     threaded=true,
 )
     # Read window parameters from file if they were not passed in
-    settings = ConScapeJobs.settings(args...)
+    settings = ConScapeSlurm.settings(args...)
     datapath = joinpath(settings["path"], "outputs")
     buffer = (isnothing(buffer) ? settings["buffer"] : buffer)::Int
     nwindows = (isnothing(nwindows) ? settings["nwindows"] : nwindows)::Int

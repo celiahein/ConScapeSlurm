@@ -1,4 +1,4 @@
-module ConScapeJobs
+module ConScapeSlurm
 
 using ConScape
 using PrecompileTools

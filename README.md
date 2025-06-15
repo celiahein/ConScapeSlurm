@@ -5,7 +5,7 @@ _SLURM job management for ConScape.jl_
 Runs a ConScape.jl `BatchProblem` as array jobs on a slurm cluster.
 
 
-`user/problem.jl` holds the problem specification, loaded with `using ConScapeJobs`.
+`user/problem.jl` holds the problem specification, loaded with `using ConScapeSlurm`.
 `user/datasets.csv` holds file paths and parameters for one or multpiple dataset that use this `Problem` specification.
 
 The `scripts` folder holds paired julia `.jl` and bash `.sh` scripts. The `.sh` scripts can be edited to change

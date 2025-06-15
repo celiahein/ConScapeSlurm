@@ -1,6 +1,6 @@
 nothing
 using ConScape
-using ConScapeJobs
+using ConScapeSlurm
 
 idkey = "SLURM_ARRAY_TASK_ID"
 batch = if haskey(ENV, idkey) 
@@ -11,9 +11,9 @@ end
 println("Starting task $batch on $(Threads.nthreads()) threads...")
 
 # Loade the assessment
-assessment = ConScapeJobs.assessment()
-batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.raster();
+assessment = ConScapeSlurm.assessment()
+batch_problem = ConScapeSlurm.batch_problem()
+rast = ConScapeSlurm.raster();
 # Initialise the batch problem with the raster data and assessment
 batch_init = init(batch_problem, rast, assessment; verbose=true)
 # Garbage collect before we start, just in case...

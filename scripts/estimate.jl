@@ -4,7 +4,7 @@
 #############################
 
 using ConScape
-using ConScapeJobs
+using ConScapeSlurm
 using JSON3
 using GLM
 using Statistics
@@ -12,9 +12,9 @@ using StatsBase
 using UnicodePlots
 using Plots
 
-datadir = ConScapeJobs.path()
-batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.load_raster()
+datadir = ConScapeSlurm.path()
+batch_problem = ConScapeSlurm.batch_problem()
+rast = ConScapeSlurm.load_raster()
 assessment = ConScape.assessment()
 
 ###
@@ -90,7 +90,7 @@ end
 
 println("Estimating run-time and memory use...")
 estimates = sample_performance(batch_problem, rast, assessment)
-JSON3.write(ConScapeJobs.estimates_path(), estimates)
+JSON3.write(ConScapeSlurm.estimates_path(), estimates)
 
 estimates.total_estimate # 2.7e7 for 21, 4.2e7 for 10, 2.95e7/3.3e7 for 16
 estimates.allocations / 1e9

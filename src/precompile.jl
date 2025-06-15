@@ -1,4 +1,4 @@
-# Precompile the ConScapeJobs problem so this happens once,
+# Precompile the ConScape problem so this happens once,
 # rather than at the start of every slurm job
 @compile_workload begin
     df = CSV.read(datasets_csv_path(), DataFrame)

@@ -1,9 +1,9 @@
 nothing
 using Pkg, Revise
-Pkg.activate("ConScapeJobs/")
+Pkg.activate("ConScapeSlurm/")
 
 using ConScape
-using ConScapeJobs
+using ConScapeSlurm
 using Rasters
 using Plots
 
@@ -12,10 +12,10 @@ using Plots
 dataset_name = "temperate_bees"
 
 # Load assessment, problem and rasters
-datadir = ConScapeJobs.path(dataset_name)
-assessment =  ConScapeJobs.assessment(dataset_name)
-batch_problem = ConScapeJobs.batch_problem(dataset_name; threaded=false)
-rast = ConScapeJobs.raster(dataset_name)
+datadir = ConScapeSlurm.path(dataset_name)
+assessment =  ConScapeSlurm.assessment(dataset_name)
+batch_problem = ConScapeSlurm.batch_problem(dataset_name; threaded=false)
+rast = ConScapeSlurm.raster(dataset_name)
 
 # Check the assessment and reassess
 assessment

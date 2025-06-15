@@ -1,15 +1,15 @@
 using Rasters
 using ConScape
-import ConScapeJobs
+import ConScapeSlurm
 
-datadir = ConScapeJobs.path()
+datadir = ConScapeSlurm.path()
 
 # Load problem and raster
-batch_problem = ConScapeJobs.batch_problem()
-rast = ConScapeJobs.raster()
-original_assessment = ConScapeJobs.original_assessment()
+batch_problem = ConScapeSlurm.batch_problem()
+rast = ConScapeSlurm.raster()
+original_assessment = ConScapeSlurm.original_assessment()
 
-pad = ConScapeJobs.settings()["buffer"]::Int
+pad = ConScapeSlurm.settings()["buffer"]::Int
 
 # Get all the filepaths that we made raster files for
 paths = filter(isdir, ConScape.batch_paths(batch_problem, rast)[original_assessment.indices])

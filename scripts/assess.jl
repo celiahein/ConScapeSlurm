@@ -1,8 +1,8 @@
 
 println("Loading packages...")
-using ConScapeJobs
+using ConScapeSlurm
 
 println("Starting ConScape assessment on $(Threads.nthreads()) cores...")
-assessment = ConScapeJobs.assess()
+assessment = ConScapeSlurm.assess()
 
 display(assessment)
